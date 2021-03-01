@@ -76,7 +76,7 @@ class FilePickerCross {
   }
 
   /// Lists all internal files inside the app's internal memory
-  static Future<Iterable<String>> listInternalFiles({Pattern? at, Pattern? name}) {
+  static Future<List<String>> listInternalFiles({Pattern? at, Pattern? name}) {
     return listFiles(at: at, name: name);
   }
 
