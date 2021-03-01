@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'dart:typed_data';
 
 import '../file_picker_cross.dart';
