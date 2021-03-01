@@ -104,15 +104,15 @@ Future<FileQuotaCross> getInternalQuota() async {
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<List<String>> listFiles({Pattern? at, Pattern? name}) async {
+Future<Iterable<String>> listFiles({Pattern? at, Pattern? name}) async {
   final String appPath = await normalizedApplicationDocumentsPath();
-  List<String> files =
+  Iterable<String> files =
       await Directory(await normalizedApplicationDocumentsPath())
           .list(recursive: true)
           .map((event) => '/' + event.path.replaceFirst(appPath, ''))
           .toList();
   if (at != null) files = files.where((element) => element.startsWith(at));
-  if (name != null) files = files.where((element) => element.endsWith(name));
+  if (name != null) files = files.where((element) => element.endsWith(name.toString()));
   return files;
 }
 
