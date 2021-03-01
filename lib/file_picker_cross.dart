@@ -83,18 +83,18 @@ class FilePickerCross {
   /// Creates a [FilePickerCross] from a local path.
   /// This does **not** allow you to open a file from the local storage but only a file previously saved by [saveToPath].
   /// If you want to open the file to the shared, local memory, use [importFromStorage] instead.
-  static Future<FilePickerCross> fromInternalPath({String? path}) async {
+  static Future<FilePickerCross> fromInternalPath(String path) async {
     final Uint8List? file = await internalFileByPath(path: path);
 
     if (file == null) throw (NullThrownError());
-    return FilePickerCross(file, path: path!);
+    return FilePickerCross(file, path: path);
   }
 
   /// Save the file to an internal path.
   /// This does **not** allow you to save the file to the device's public storage like `Documents`, `Downloads`
   /// or `Photos` but saves the [FilePickerCross] in an **app specific**, internal folder for later access by *this app only*. To export a file to
   /// the local storage, use [exportToStorage] instead.
-  Future<bool> saveToPath({String? path}) {
+  Future<bool> saveToPath(String path) {
     return saveInternalBytes(bytes: toUint8List(), path: path);
   }
 
