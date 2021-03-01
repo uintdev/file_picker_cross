@@ -1,6 +1,3 @@
-// @dart=2.9
-
-
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 
@@ -14,10 +11,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FilePickerCross filePickerCross;
+  FilePickerCross? filePickerCross;
 
   String _fileString = '';
-  Set<String> lastFiles;
+  Set<String>? lastFiles;
   FileQuotaCross quota = FileQuotaCross(quota: 0, usage: 0);
 
   @override
@@ -54,12 +51,12 @@ class _MyAppState extends State<MyApp> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => ListTile(
                       leading: Text('$index.'),
-                      title: Text(lastFiles.toList()[index]),
+                      title: Text(lastFiles!.toList()[index]),
                       onTap: () async => setFilePicker(
                           await FilePickerCross.fromInternalPath(
-                              path: lastFiles.toList()[index])),
+                              path: lastFiles!.toList()[index])),
                     ),
-                    itemCount: lastFiles.length,
+                    itemCount: lastFiles!.length,
                   ),
             Builder(
               builder: (context) => RaisedButton(
@@ -105,21 +102,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _selectSaveFile() {
-    filePickerCross.exportToStorage();
+    filePickerCross!.exportToStorage();
   }
 
   setFilePicker(FilePickerCross filePicker) => setState(() {
         filePickerCross = filePicker;
-        filePickerCross.saveToPath(path: filePickerCross.fileName);
+        filePickerCross!.saveToPath(path: filePickerCross!.fileName);
         FilePickerCross.quota().then((value) {
           setState(() => quota = value);
         });
-        lastFiles.add(filePickerCross.fileName);
+        lastFiles!.add(filePickerCross!.fileName);
         try {
           _fileString = filePickerCross.toString();
         } catch (e) {
           _fileString = 'Not a text file. Showing base64.\n\n' +
-              filePickerCross.toBase64();
+              filePickerCross!.toBase64();
         }
       });
 }

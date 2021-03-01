@@ -1,7 +1,6 @@
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'dart:typed_data';
 
@@ -9,23 +8,23 @@ import '../file_picker_cross.dart';
 
 /// Implementation of file selection dialog using dart:html for the web
 Future<Map<String, Uint8List>> selectSingleFileAsBytes(
-    {FileTypeCross type, String fileExtension}) {
+    {required FileTypeCross type, required String fileExtension}) {
   Completer<Map<String, Uint8List>> loadEnded = Completer();
 
   String accept = _fileTypeToAcceptString(type, fileExtension);
-  html.InputElement uploadInput = html.FileUploadInputElement();
+  html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
   uploadInput.draggable = true;
   uploadInput.accept = accept;
   uploadInput.click();
 
   uploadInput.onChange.listen((e) {
     final files = uploadInput.files;
-    final file = files[0];
+    final file = files![0];
     final reader = new html.FileReader();
 
     reader.onLoadEnd.listen((e) {
       loadEnded
-          .complete({uploadInput.value.replaceAll('\\', '/'): reader.result});
+          .complete({uploadInput.value!.replaceAll('\\', '/'): reader.result});
     });
     reader.readAsArrayBuffer(file);
   });
@@ -34,11 +33,11 @@ Future<Map<String, Uint8List>> selectSingleFileAsBytes(
 
 /// Implementation of file selection dialog for multiple files using dart:html for the web
 Future<Map<String, Uint8List>> selectMultipleFilesAsBytes(
-    {FileTypeCross type, String fileExtension}) {
+    {required FileTypeCross type, required String fileExtension}) {
   Completer<Map<String, Uint8List>> loadEnded = Completer();
 
   String accept = _fileTypeToAcceptString(type, fileExtension);
-  html.InputElement uploadInput = html.FileUploadInputElement();
+  html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
   uploadInput.draggable = true;
   uploadInput.accept = accept;
   uploadInput.multiple = true;
@@ -50,10 +49,10 @@ Future<Map<String, Uint8List>> selectMultipleFilesAsBytes(
 
     Map<String, Uint8List> fileBytes = {};
 
-    files.forEach((currentFile) {
+    files!.forEach((currentFile) {
       final reader = new html.FileReader();
       reader.onLoadEnd.listen((e) {
-        fileBytes[(currentFile.relativePath + '/' + currentFile.name)
+        fileBytes[(currentFile.relativePath! + '/' + currentFile.name)
             .replaceAll('\\', '/')] = reader.result;
         counter++;
         if (counter >= files.length) loadEnded.complete(fileBytes);
@@ -66,20 +65,20 @@ Future<Map<String, Uint8List>> selectMultipleFilesAsBytes(
 
 /// Implementation of file selection dialog for the web
 Future<String> pickSingleFileAsPath(
-    {FileTypeCross type, String fileExtension}) async {
+    {required FileTypeCross type, required String fileExtension}) async {
   /// TODO: implement using NativeFileSystem API
   throw UnimplementedError('Unsupported Platform for file_picker_cross');
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<Uint8List> internalFileByPath({String path}) async {
+Future<Uint8List> internalFileByPath({required String path}) async {
   Completer<Uint8List> completer = Completer();
-  completer.complete(Uint8List.fromList(openLocalFileSystem()[path]));
+  completer.complete(Uint8List.fromList(openLocalFileSystem()[path]!));
   return completer.future;
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<bool> saveInternalBytes({Uint8List bytes, String path}) async {
+Future<bool> saveInternalBytes({required Uint8List bytes, required String path}) async {
   final fs = openLocalFileSystem();
   fs[path] = bytes;
   saveLocalFileSystem(fs);
@@ -88,7 +87,7 @@ Future<bool> saveInternalBytes({Uint8List bytes, String path}) async {
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
 Future<String> exportToExternalStorage(
-    {Uint8List bytes, String fileName}) async {
+    {required Uint8List bytes, required String fileName}) async {
   html.AnchorElement link = html.AnchorElement(
       href: html.Url.createObjectUrlFromBlob(
           html.Blob([bytes], 'application/octet-stream')))
@@ -98,15 +97,7 @@ Future<String> exportToExternalStorage(
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<List<String>> listFiles({Pattern at, Pattern name}) async {
-  Iterable<String> fs = openLocalFileSystem().keys.toList();
-  if (at != null) fs = fs.where((element) => element.startsWith(at));
-  if (name != null) fs = fs.where((element) => element.endsWith(name));
-  return fs;
-}
-
-/// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<bool> deleteInternalPath({String path}) async {
+Future<bool> deleteInternalPath({required String path}) async {
   final fs = openLocalFileSystem();
   fs.remove(path);
   saveLocalFileSystem(fs);
@@ -115,13 +106,13 @@ Future<bool> deleteInternalPath({String path}) async {
 
 Future<FileQuotaCross> getInternalQuota() async {
   try {
-    if (!await html.window.navigator.storage.persisted())
-      await html.window.navigator.storage.persist();
+    if (!await html.window.navigator.storage!.persisted())
+      await html.window.navigator.storage!.persist();
   } catch (e) {
     print('Persistent storage not supported. Using default storage instead.');
   }
-  final quota = await html.window.navigator.storage.estimate();
-  return FileQuotaCross(quota: quota['quota'], usage: quota['usage']);
+  final quota = await html.window.navigator.storage!.estimate();
+  return FileQuotaCross(quota: quota!['quota'], usage: quota['usage']);
 }
 
 String _fileTypeToAcceptString(FileTypeCross type, String fileExtension) {
@@ -152,7 +143,7 @@ const kLocalStorageKey = 'file_picker_cross_file_system';
 Map<String, List<int>> openLocalFileSystem() {
   if (html.window.localStorage.containsKey(kLocalStorageKey)) {
     Map<String, List> map = Map<String, List>.from(
-        jsonDecode(html.window.localStorage[kLocalStorageKey]));
+        jsonDecode(html.window.localStorage[kLocalStorageKey]!));
 
     Map<String, List<int>> returnMap = {};
     map.forEach((key, value) {

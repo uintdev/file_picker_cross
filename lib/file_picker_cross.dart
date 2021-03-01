@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -26,7 +24,7 @@ class FilePickerCross {
   final Uint8List _bytes;
 
   FilePickerCross(this._bytes,
-      {this.path, this.type = FileTypeCross.any, this.fileExtension = ''});
+      {required this.path, this.type = FileTypeCross.any, this.fileExtension = ''});
 
   /// Deprecated. Use [importFromStorage] instead
   @deprecated
@@ -47,7 +45,7 @@ class FilePickerCross {
           type: type, fileExtension: fileExtension);
 
       String _path = file.keys.toList()[0];
-      Uint8List _bytes = file[_path];
+      Uint8List? _bytes = file[_path];
 
       if (_bytes == null) throw (NullThrownError());
       return FilePickerCross(_bytes,
@@ -77,43 +75,31 @@ class FilePickerCross {
     }
   }
 
-  /// Deprecated. Use [saveToPath] or [exportToStorage] instead.
-  @deprecated
-  static Future<FilePickerCross> save(
-      {FileTypeCross type = FileTypeCross.any,
-      String fileExtension = ''}) async {
-    final String path =
-        await pickSingleFileAsPath(type: type, fileExtension: fileExtension);
-
-    return FilePickerCross(null,
-        path: path, fileExtension: fileExtension, type: type);
-  }
-
   /// Lists all internal files inside the app's internal memory
-  static Future<List<String>> listInternalFiles({Pattern at, Pattern name}) {
+  static Future<List<String>> listInternalFiles({Pattern? at, Pattern? name}) {
     return listFiles(at: at, name: name);
   }
 
   /// Creates a [FilePickerCross] from a local path.
   /// This does **not** allow you to open a file from the local storage but only a file previously saved by [saveToPath].
   /// If you want to open the file to the shared, local memory, use [importFromStorage] instead.
-  static Future<FilePickerCross> fromInternalPath({String path}) async {
-    final Uint8List file = await internalFileByPath(path: path);
+  static Future<FilePickerCross> fromInternalPath({String? path}) async {
+    final Uint8List? file = await internalFileByPath(path: path);
 
     if (file == null) throw (NullThrownError());
-    return FilePickerCross(file, path: path);
+    return FilePickerCross(file, path: path!);
   }
 
   /// Save the file to an internal path.
   /// This does **not** allow you to save the file to the device's public storage like `Documents`, `Downloads`
   /// or `Photos` but saves the [FilePickerCross] in an **app specific**, internal folder for later access by *this app only*. To export a file to
   /// the local storage, use [exportToStorage] instead.
-  Future<bool> saveToPath({String path}) {
+  Future<bool> saveToPath({String? path}) {
     return saveInternalBytes(bytes: toUint8List(), path: path);
   }
 
   /// finally deletes a file stored in the ggiven path of your application's fake filesystem
-  static Future<bool> delete({String path}) {
+  static Future<bool> delete({String? path}) {
     return deleteInternalPath(path: path);
   }
 
@@ -153,7 +139,7 @@ class FilePickerCross {
   String toBase64() => base64.encode(_bytes);
 
   /// Returns the file as MultiPartFile for use with tha http package. Useful for file upload in apps.
-  http.MultipartFile toMultipartFile({String filename}) {
+  http.MultipartFile toMultipartFile({String? filename}) {
     if (filename == null) filename = fileName;
     return http.MultipartFile.fromBytes('file', _bytes,
         contentType: new MediaType('application', 'octet-stream'),
@@ -175,7 +161,7 @@ class FileQuotaCross {
   /// the current use of storage in bytes
   final int usage;
 
-  FileQuotaCross({this.quota, this.usage});
+  FileQuotaCross({this.quota = 0, this.usage = 0});
 
   /// the number of bytes free for use
   int get remaining => quota - usage;
