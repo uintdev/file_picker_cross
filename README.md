@@ -2,12 +2,6 @@
 
 > The only Flutter plugin to select, open, choose, pick and create documents, images videos or other files on Android, iOS, the desktop and the web for reading, writing, use as String, byte list or HTTP uploads.
 
-## Modified to fit requirements
-
-This plugin is a modified variant of `file_picker_cross` 4.2.7 and adds the ability to pick up on exception reasons rather than relying on a catch-all exception. For instance, you can determine if storage access permission was denied by accessing the `FileSelectionCanceledError` exception `reason()` method.
-
-The original repository can be found here: https://gitlab.com/testapp-system/file_picker_cross
-
 ## Getting Started
 
 `file_picker_cross` allows you to select, edit and save files from your device and is compatible with Android, iOS, Desktops (using both go-flutter or FDE) and the web.
@@ -66,6 +60,33 @@ myFile.directory;
 ```
 
 To get details about the certain properties and methods, check out the [API documentation](https://pub.dev/documentation/file_picker_cross/latest/file_picker_cross/FilePickerCross-class.html).
+
+## Exception handling
+
+Different platforms will throw different exceptions whether it is due to user action or platform restrictions. For instance, you may want to know if a user had denied access to storage and act upon it. There is a method to help out with that.
+
+```dart
+await FilePickerCross.importFromStorage().then(() {
+  // ...
+}).onError((error, _) {
+  String _exceptionData = error.reason();
+  print('----------------------');
+  print('REASON: ${_exceptionData}');
+  if (_exceptionData == 'read_external_storage_denied') {
+    print('Permission was denied');
+  } else if (_exceptionData == 'selection_canceled') {
+    print('User canceled operation');
+  } 
+  print('----------------------');
+});
+```
+
+When the `FileSelectionCanceledError` exception is thrown, you can access the `reason()` method to collect underlying exception information. It has a return type of `String`.
+
+Behavior:
+- On user cancelation, `selection_canceled` is returned
+- When `PlatformException` exception occurs, the raw error value is extracted and then returned (i.e. `read_external_storage_denied`)
+- As a fallback, exceptions that were not 'handled' will be returned in full
 
 ## The scope of this package
 
