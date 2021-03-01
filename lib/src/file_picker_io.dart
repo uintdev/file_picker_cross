@@ -1,8 +1,9 @@
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:disk_space/disk_space.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
@@ -15,7 +16,7 @@ import 'file_picker_mobile.dart';
 
 /// Implementation of file selection dialog delegating to platform-specific implementations
 Future<Map<String, Uint8List>> selectSingleFileAsBytes(
-    {required FileTypeCross type, required String fileExtension}) async {
+    {FileTypeCross type, String fileExtension}) async {
   if (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia) {
     return await selectFilesMobile(type: type, fileExtension: fileExtension);
   } else {
@@ -25,7 +26,7 @@ Future<Map<String, Uint8List>> selectSingleFileAsBytes(
 
 /// Implementation of file selection dialog delegating to platform-specific implementations
 Future<Map<String, Uint8List>> selectMultipleFilesAsBytes(
-    {required FileTypeCross type, required String fileExtension}) async {
+    {FileTypeCross type, String fileExtension}) async {
   if (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia) {
     return await selectMultipleFilesMobile(
         type: type, fileExtension: fileExtension);
@@ -37,7 +38,7 @@ Future<Map<String, Uint8List>> selectMultipleFilesAsBytes(
 
 /// Implementation of file selection dialog delegating to platform-specific implementations
 Future<String> pickSingleFileAsPath(
-    {required FileTypeCross type, required String fileExtension}) async {
+    {FileTypeCross type, String fileExtension}) async {
   if (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia) {
     return await saveFileMobile(type: type, fileExtension: fileExtension);
   } else {
@@ -46,37 +47,37 @@ Future<String> pickSingleFileAsPath(
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<Uint8List> internalFileByPath({String path = ''}) async {
+Future<Uint8List> internalFileByPath({String path}) async {
   return fileByPath(await normalizedApplicationDocumentsPath() + path)
       .readAsBytes();
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
-Future<bool> saveInternalBytes({Uint8List? bytes, String path = ''}) async {
+Future<bool> saveInternalBytes({Uint8List bytes, String path}) async {
   File file = fileByPath(await normalizedApplicationDocumentsPath() + path);
   file.createSync(recursive: true);
   return file
-      .writeAsBytes(bytes!)
+      .writeAsBytes(bytes)
       .then((value) => true)
       .catchError((e) => false);
 }
 
 /// Dummy implementation throwing an error. Should be overwritten by conditional imports.
 Future<String> exportToExternalStorage(
-    {Uint8List? bytes, String fileName = ''}) async {
-  String? extension;
+    {Uint8List bytes, String fileName}) async {
+  String extension;
   if (fileName.contains('.'))
     extension = fileName.substring(fileName.lastIndexOf('.'));
   if (Platform.isAndroid || Platform.isIOS) {
     final String path = (await getTemporaryDirectory()).path + '/' + fileName;
-    await File(path).writeAsBytes(bytes!);
+    await File(path).writeAsBytes(bytes);
     Share.shareFiles([path]);
     return fileName;
   } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     String path = await saveFileDesktop(
         fileExtension: extension, suggestedFileName: fileName);
     File file = await File(path).create(recursive: true);
-    file = await file.writeAsBytes(bytes!);
+    file = await file.writeAsBytes(bytes);
     return file.path;
   } else {
     throw UnimplementedError(
@@ -84,8 +85,8 @@ Future<String> exportToExternalStorage(
   }
 }
 
-Future<bool> deleteInternalPath({String? path}) async {
-  if (await fileByPath(path!).exists())
+Future<bool> deleteInternalPath({String path}) async {
+  if (await fileByPath(path).exists())
     return fileByPath(path)
         .delete()
         .then((value) => true)
@@ -103,8 +104,21 @@ Future<FileQuotaCross> getInternalQuota() async {
       quota: totalSpace.round(), usage: (totalSpace - freeSpace).round()));
 }
 
+/// Dummy implementation throwing an error. Should be overwritten by conditional imports.
+Future<List<String>> listFiles({Pattern at, Pattern name}) async {
+  final String appPath = await normalizedApplicationDocumentsPath();
+  List<String> files =
+      await Directory(await normalizedApplicationDocumentsPath())
+          .list(recursive: true)
+          .map((event) => '/' + event.path.replaceFirst(appPath, ''))
+          .toList();
+  if (at != null) files = files.where((element) => element.startsWith(at));
+  if (name != null) files = files.where((element) => element.endsWith(name));
+  return files;
+}
+
 /// Parsing various valid HTML/JS file type declarations into valid ones for file_picker
-dynamic parseExtension(String? fileExtension) {
+dynamic parseExtension(String fileExtension) {
   return (fileExtension != null &&
           fileExtension
               .replaceAll(',', '')

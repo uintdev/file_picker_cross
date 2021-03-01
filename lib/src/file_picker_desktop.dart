@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'dart:typed_data';
 
 import 'package:file_chooser/file_chooser.dart';
@@ -7,7 +9,7 @@ import 'file_picker_io.dart';
 
 /// Implementation of file selection dialog using file_chooser for desktop platforms
 Future<Map<String, Uint8List>> selectFilesDesktop(
-    {required FileTypeCross type, String? fileExtension}) async {
+    {FileTypeCross type, String fileExtension}) async {
   FileChooserResult file = await ((parseExtension(fileExtension) == null)
       ? showOpenPanel()
       : showOpenPanel(allowedFileTypes: [
@@ -20,7 +22,7 @@ Future<Map<String, Uint8List>> selectFilesDesktop(
 
 /// Implementation of file selection dialog for multiple files using file_chooser for desktop platforms
 Future<Map<String, Uint8List>> selectMultipleFilesDesktop(
-    {required FileTypeCross type, String? fileExtension}) async {
+    {FileTypeCross type, String fileExtension}) async {
   FileChooserResult chooserResult =
       await ((parseExtension(fileExtension) == null)
           ? showOpenPanel(
@@ -40,7 +42,7 @@ Future<Map<String, Uint8List>> selectMultipleFilesDesktop(
 
 /// Implementation of file selection dialog using file_chooser for desktop platforms
 Future<String> saveFileDesktop(
-    {String? fileExtension, String suggestedFileName = ''}) async {
+    {String fileExtension, String suggestedFileName}) async {
   FileChooserResult file = await showSavePanel(
       suggestedFileName: suggestedFileName,
       allowedFileTypes: (parseExtension(fileExtension) == null)
