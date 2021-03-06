@@ -264,7 +264,7 @@ class FileSelectionCanceledError implements Exception {
 
   // Helps developer collect specific exception
   // reasoning to act up-on
-  String reason() {
+  String _reason() {
     String _err = _msg.toString();
 
     // Provide PlatformException specific messages
@@ -336,5 +336,5 @@ class FileSelectionCanceledError implements Exception {
   }
 
   @override
-  String toString() => 'FileSelectionCanceledError: $_msg';
+  String toString() => _reason();
 }
