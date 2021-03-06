@@ -1,3 +1,13 @@
+## 4.2.9
+
+* Removed noisy output
+* Added optional parameters subject, text, and sharePositionOrigin to the `FilePickerCross.exportToStorage()` 
+
+## 4.2.8
+
+* Updated dependencies
+* Fixed incompatibility with old gradle version
+
 ## 4.2.7
 
 * Fixed implementation of save file dialog on desktop platforms requiring leading dots to be doubled

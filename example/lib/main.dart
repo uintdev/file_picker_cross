@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey exportKey = GlobalKey();
   FilePickerCross filePickerCross;
 
   String _fileString = '';
@@ -59,14 +60,15 @@ class _MyAppState extends State<MyApp> {
                     itemCount: lastFiles.length,
                   ),
             Builder(
-              builder: (context) => RaisedButton(
+              builder: (context) => ElevatedButton(
                 onPressed: () => _selectFile(context),
                 child: Text('Open File...'),
               ),
             ),
             (filePickerCross == null)
                 ? Text('Open a file first, to save')
-                : RaisedButton(
+                : ElevatedButton(
+                    key: exportKey,
                     onPressed: _selectSaveFile,
                     child: Text('Save as...'),
                   ),
@@ -95,14 +97,27 @@ class _MyAppState extends State<MyApp> {
   void _selectFile(context) {
     FilePickerCross.importMultipleFromStorage().then((filePicker) {
       setFilePicker(filePicker[0]);
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('You selected ${filePicker.length} file(s).'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You selected ${filePicker.length} file(s).'),
+        ),
+      );
+
+      setState(() {});
     });
   }
 
   void _selectSaveFile() {
-    filePickerCross.exportToStorage();
+    RenderBox renderBox = exportKey.currentContext.findRenderObject();
+    Offset position = renderBox.localToGlobal(Offset.zero);
+    filePickerCross.exportToStorage(
+        subject: filePickerCross.fileName,
+        sharePositionOrigin: Rect.fromLTWH(
+            //
+            position.dx,
+            position.dy,
+            renderBox.size.width,
+            renderBox.size.height));
   }
 
   setFilePicker(FilePickerCross filePicker) => setState(() {
