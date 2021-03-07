@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:disk_space/disk_space.dart';
 
 import 'package:file_picker/file_picker.dart';
