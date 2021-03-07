@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 
@@ -37,7 +36,9 @@ Future<Map<String, Uint8List>> selectMultipleFilesMobile({
 
   Map<String, Uint8List> filesMap = {};
   files?.paths.forEach((path) {
-    filesMap[path] = File(path).readAsBytesSync();
+    if (path != null) {
+      filesMap[path] = File(path).readAsBytesSync();
+    }
   });
 
   return filesMap;
