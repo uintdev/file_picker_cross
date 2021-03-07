@@ -5,6 +5,9 @@ homepage: https://gitlab.com/testapp-system/file_picker_cross
 repository: https://gitlab.com/testapp-system/file_picker_cross.git
 issue_tracker: https://gitlab.com/testapp-system/file_picker_cross/issues
 
+# TEMPORARY
+publish_to: none
+
 environment:
   sdk: ">=2.12.0-0 <3.0.0"
 
@@ -18,7 +21,11 @@ dependencies:
   path_provider: ^2.0.1
   package_info: ^2.0.0
   share: ^2.0.0
-  disk_space: ^0.0.3
+  # TEMPORARY
+  #disk_space: ^0.0.3
+  disk_space:
+    git:
+      url: https://github.com/uintdev/disk_space_ns.git
 
 dev_dependencies:
   flutter_test:
