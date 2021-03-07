@@ -77,13 +77,15 @@ To get details about the certain properties and methods, check out the [API docu
 
 ## Exception handling
 
-Different platforms will throw different exceptions whether it is due to user action or platform restrictions. For instance, you may want to know if a user had denied access to storage and act upon it. There is a method to help out with that.
+Different platforms will throw different exceptions whether it is due to user action or platform restrictions. For instance, you may want to know if a user had denied access to storage and act upon it.
+
+When the `FileSelectionCanceledError` exception is thrown, you can use the `toString()` method to collect underlying exception information.
 
 ```dart
 await FilePickerCross.importFromStorage().then(() {
   // ...
 }).onError((error, _) {
-  String _exceptionData = error.reason();
+  String _exceptionData = error.toString();
   print('----------------------');
   print('REASON: ${_exceptionData}');
   if (_exceptionData == 'read_external_storage_denied') {
@@ -94,8 +96,6 @@ await FilePickerCross.importFromStorage().then(() {
   print('----------------------');
 });
 ```
-
-When the `FileSelectionCanceledError` exception is thrown, you can access the `reason()` method to collect underlying exception information. It has a return type of `String`.
 
 Behavior:
 - On user cancelation, `selection_canceled` is returned
