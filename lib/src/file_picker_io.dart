@@ -6,7 +6,6 @@ import 'dart:ui';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:disk_space/disk_space.dart';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:package_info/package_info.dart';
