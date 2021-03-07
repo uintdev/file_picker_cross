@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:file_chooser/file_chooser.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 
