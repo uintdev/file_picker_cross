@@ -58,6 +58,7 @@ class FilePickerCross {
       if (_bytes == null) {
         throw (NullThrownError());
       }
+      
       return FilePickerCross(_bytes,
           path: _path, fileExtension: fileExtension, type: type);
     } catch (e) {
@@ -255,10 +256,9 @@ class FileQuotaCross {
 
 /// [Exception] if the selection oof a file was canceled
 class FileSelectionCanceledError implements Exception {
-  var _msg;
-  var platformError;
+  Object? _msg;
 
-  FileSelectionCanceledError([var msg = '']) {
+  FileSelectionCanceledError([Object msg = '']) {
     this._msg = msg;
   }
 
@@ -329,7 +329,7 @@ class FileSelectionCanceledError implements Exception {
     if (_methodData != '') {
       _reasonResult = _methodData;
     } else {
-      _reasonResult = _msg;
+      _reasonResult = _msg.toString();
     }
 
     return _reasonResult;
