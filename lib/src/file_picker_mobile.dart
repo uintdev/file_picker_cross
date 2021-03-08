@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
+import 'package:flutter/services.dart';
 
 import 'file_picker_io.dart';
 
@@ -15,11 +16,12 @@ Future<Map<String, Uint8List>> selectFilesMobile({
       type: fileTypeCrossParse(type),
       allowedExtensions: parseExtension(fileExtension));
 
-  final p = filePickerResults?.files.single.path;
-
-  File file = File(p!);
-
-  return {file.path: await file.readAsBytes()};
+    if (filePickerResults != null) {
+      File file = File(filePickerResults.files.single.path!);
+      return {file.path: await file.readAsBytes()};
+    } else {
+      throw PlatformException(code: 'selection_canceled');
+    }
 }
 
 /// Implementation of file selection dialog for multiple files using file_picker for mobile platforms
