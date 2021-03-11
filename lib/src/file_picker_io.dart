@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:disk_space/disk_space.dart';
+import 'package:disk_space_ns/disk_space_ns.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
@@ -129,8 +129,8 @@ Future<bool> deleteInternalPath({
 }
 
 Future<FileQuotaCross> getInternalQuota() async {
-  double freeSpace = (await DiskSpace.getFreeDiskSpace ?? 0) * 1e6;
-  double totalSpace = (await DiskSpace.getTotalDiskSpace ?? 0) * 1e6;
+  double freeSpace = (await DiskSpace.getFreeDiskSpace) * 1e6;
+  double totalSpace = (await DiskSpace.getTotalDiskSpace) * 1e6;
   return (FileQuotaCross(
       quota: totalSpace.round(), usage: (totalSpace - freeSpace).round()));
 }
